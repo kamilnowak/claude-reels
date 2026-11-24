@@ -75,7 +75,34 @@ def collect_words(tr, drop):
     return words
 
 
-def clips_from_words(words, cfg, total):
+def loudness_track(video):
+    raw = subprocess.run(['ffmpeg', '-v', 'error', '-i', video, '-ac', '1', '-ar', '16000', '-f', 's16le', '-'],
+                         capture_output=True).stdout
+    import array
+    a = array.array('h', raw)
+    n = 320
+    out = []
+    for i in range(0, len(a) - n, n):
+        chunk = a[i:i + n]
+        out.append((sum(x * x for x in chunk) / n) ** 0.5)
+    return out
+
+
+def snap_starts(clips, rms, total):
+    """Whisper often starts a loud or repeated word late. Move a clip start back while speech is still audible."""
+    if not rms:
+        return
+    loud = sorted(rms)[int(len(rms) * 0.9)]
+    for c in clips:
+        i = int(c['a'] / 0.02)
+        j = i
+        while j > 5 and i - j < 30 and max(rms[j - 6:j]) > loud * 0.25:
+            j -= 1
+        if j < i:
+            c['a'] = max(0.0, j * 0.02 - 0.04)
+
+
+def clips_from_words(words, cfg, total, rms=None):
     clips = []
     for w in words:
         if clips and w['s'] - clips[-1]['words'][-1]['e'] <= cfg['gap']:
@@ -85,6 +112,7 @@ def clips_from_words(words, cfg, total):
     for c in clips:
         c['a'] = max(0.0, c['words'][0]['s'] - cfg['pad_in'])
         c['b'] = min(total, c['words'][-1]['e'] + cfg['pad_out'])
+    snap_starts(clips, rms, total)
     merged = []
     for c in clips:
         if merged and c['a'] <= merged[-1]['b']:
@@ -196,7 +224,7 @@ def main():
     cfg = load_cfg()
     tr = json.load(open(cfg['transcript']))
     total = duration(cfg['video'])
-    clips, new_total = clips_from_words(collect_words(tr, set(cfg['drop_segments'])), cfg, total)
+    clips, new_total = clips_from_words(collect_words(tr, set(cfg['drop_segments'])), cfg, total, loudness_track(cfg['video']))
     if not clips:
         sys.exit('No words left after dropping segments')
 

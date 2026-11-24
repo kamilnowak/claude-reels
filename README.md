@@ -10,7 +10,7 @@ You record on your phone. Claude finds the topic patterns, writes and scores the
 |---|---|
 | `starter-prompt.md` | One prompt that runs the whole process. Works in any Claude chat, no setup. Start here. |
 | `skills/reels-ideas/` | Claude Code skill: analyse 3 benchmark accounts, build a topic bank, write and score a script card. |
-| `skills/reels-edit/` | Claude Code skill and scripts: transcript, take selection, cutting pauses, punch-ins, -14 LUFS, animated captions and cards in HyperFrames, final check. |
+| `skills/reels-edit/` | Claude Code skill and scripts: transcript of every clip, best take of each line, joining, cutting pauses, punch-ins, -14 LUFS, animated captions and cards in HyperFrames, final check. |
 | `rules.md` | The editor's memory. Every note you give becomes a rule for the next video. |
 
 ## The six steps
@@ -46,12 +46,15 @@ Then, in Claude Code, inside your videos folder: "find me reel ideas" or "edit r
 You can run the scripts by hand too:
 
 ```bash
-python3 skills/reels-edit/scripts/transcribe.py raw.mp4 --lang en
+python3 skills/reels-edit/scripts/transcribe.py clip1.mp4 clip2.mp4 --lang en
+python3 skills/reels-edit/scripts/takes.py sheets clip1.mp4 clip2.mp4
+python3 skills/reels-edit/scripts/takes.py join takes.json
 python3 skills/reels-edit/scripts/edit.py config.json
-python3 skills/reels-edit/scripts/check.py cut.mp4
+python3 skills/reels-edit/scripts/hf_captions.py hf.json
+python3 skills/reels-edit/scripts/check.py final.mp4
 ```
 
-Every option of `config.json` is documented at the top of `edit.py`.
+Every option of each config file is documented at the top of its script.
 
 ## Works in any language
 
