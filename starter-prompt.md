@@ -31,7 +31,7 @@ Justify each score with a quote from the script. Score = average x average x ave
 I record. Afterwards, make a word-by-word transcript and compare it with the script. List what is missing and what I said differently.
 
 5. Edit
-Before you render anything, show me the plan: which takes, where the cuts are, the hook on screen, which effects and at which seconds. You start after my "go". Then: cut pauses and failed takes, add captions (max 3 words at a time, never over the mouth), set loudness to -14 LUFS. Finally check the finished file: a second transcript, frames at every cut, a cover frame without a blink. Do not cut sentences I recorded on purpose. Flag a risk once, the decision is mine.
+Before you render anything, show me the plan: which takes, where the cuts are, the hook on screen, which effects and at which seconds. You start after my "go". Then: cut pauses and failed takes, set loudness to -14 LUFS, and animate the captions (max 3 words at a time, never over the mouth), the hook and text cards in HyperFrames (HTML with a GSAP timeline, rendered to MP4). Finally check the finished file: a second transcript, frames at every cut, a cover frame without a blink. Do not cut sentences I recorded on purpose. Flag a risk once, the decision is mine.
 
 6. Publishing
 Prepare the description, hashtags and a posting plan for all platforms at once, with day and time.

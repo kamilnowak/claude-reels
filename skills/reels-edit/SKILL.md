@@ -7,7 +7,7 @@ description: Edit a raw vertical talking-head video (Reels, TikTok, Shorts) into
 
 You are the user's video editor. They record on a phone, you do the rest, but they approve the plan before anything is rendered.
 
-Scripts are in `scripts/` next to this file. They need `ffmpeg`, Python 3 with `Pillow`, and either `mlx-whisper` (Apple Silicon) or `faster-whisper` (everything else).
+Scripts are in `scripts/` next to this file. They need `ffmpeg`, Python 3 with `Pillow`, and either `mlx-whisper` (Apple Silicon) or `faster-whisper` (everything else). Animation needs Node 18+ and Chrome for HyperFrames.
 
 ## Before you start
 
@@ -25,12 +25,27 @@ Scripts are in `scripts/` next to this file. They need `ffmpeg`, Python 3 with `
    - effects and where (punch-ins, text cards), at most one strong effect every ~8 s,
    - music or none.
    Ask "go or change?". Render only after they say go.
-5. **Render.** Write `config.json` (fields are documented at the top of `scripts/edit.py`) and run `python3 scripts/edit.py config.json`.
-6. **Check the file.** `python3 scripts/check.py cut.mp4`, then:
+5. **Base cut.** Write `config.json` (fields are documented at the top of `scripts/edit.py`) with `"captions": false` and no `hook`, then run `python3 scripts/edit.py config.json`. You get the cut video with punch-ins and -14 LUFS, plus `<output>.words.json` with word times on the new timeline.
+6. **Animation in HyperFrames.** Captions, the hook card and text cards are animated in [HyperFrames](https://www.npmjs.com/package/hyperframes): an HTML page with a GSAP timeline, rendered to MP4. See "Animation with HyperFrames" below.
+   If Node or Chrome is not available, render static captions with `edit.py` instead (`"captions": true`, `hook`) and say so.
+7. **Check the file.** `python3 scripts/check.py cut.mp4`, then:
    - open the contact sheet and look at it: captions on the mouth or chin, black frames, a blink on the first frame,
    - run `transcribe.py` on the finished file and make sure no word was clipped at a cut,
    - loudness between -15 and -13 LUFS, true peak -1.5 dBTP or lower.
-7. **Hand over** the file, the sheet, and what you could not fix.
+8. **Hand over** the file, the sheet, and what you could not fix.
+
+## Animation with HyperFrames
+
+The base cut is the video layer. Everything that moves on top of it is HTML.
+
+1. New project next to the video: `npx --yes hyperframes init <slug> --example blank --resolution portrait --non-interactive`. Copy the base cut to `<slug>/assets/base.mp4`.
+2. Build the composition in `index.html`: the base video as the first layer, then one element per caption group, the hook card and any text cards, each animated on the GSAP timeline at the times from `<output>.words.json`.
+   - Captions: groups of max 3 words, the active word on a pill that slides along the group. Captions appear about 2 frames before the word and leave without fading.
+   - Hook card: in from 0 s with a short spring, gone by ~2.8 s.
+   - Text cards and highlights: only where the plan put them, at most one strong effect every ~8 s.
+3. `npx hyperframes check` must report 0 errors. Keep only one HTML file with `data-composition-id` in the project folder, or the check fails.
+4. `npx hyperframes snapshot --at <s>` at the hook, at each card and at the last second. Look at the frames before rendering.
+5. `npx hyperframes render --output ../cut-final.mp4`, then go to the check step with that file.
 
 ## Style defaults
 

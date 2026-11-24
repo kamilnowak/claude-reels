@@ -10,7 +10,7 @@ You record on your phone. Claude finds the topic patterns, writes and scores the
 |---|---|
 | `starter-prompt.md` | One prompt that runs the whole process. Works in any Claude chat, no setup. Start here. |
 | `skills/reels-ideas/` | Claude Code skill: analyse 3 benchmark accounts, build a topic bank, write and score a script card. |
-| `skills/reels-edit/` | Claude Code skill and scripts: transcript, take selection, cutting pauses, punch-ins, captions, hook text, -14 LUFS, final check. |
+| `skills/reels-edit/` | Claude Code skill and scripts: transcript, take selection, cutting pauses, punch-ins, -14 LUFS, animated captions and cards in HyperFrames, final check. |
 | `rules.md` | The editor's memory. Every note you give becomes a rule for the next video. |
 
 ## The six steps
@@ -19,7 +19,7 @@ You record on your phone. Claude finds the topic patterns, writes and scores the
 2. **Script.** Hook in max 7 words, frame 0, text for the first 3 s, scenes, punchline. Max ~25 s.
 3. **Score.** Stop x Hold x Convert, 0 to 1000. Fix the script below ~500, before you record.
 4. **Recording.** You, a phone, a few takes.
-5. **Edit.** Claude shows a plan, you say go, it renders and checks the result.
+5. **Edit.** Claude shows a plan, you say go, it cuts the video, animates captions and cards in HyperFrames and checks the result.
 6. **Publishing.** Description, hashtags and a schedule for all platforms at once.
 
 ## Quick start
@@ -41,6 +41,7 @@ Then, in Claude Code, inside your videos folder: "find me reel ideas" or "edit r
 - `ffmpeg` on your PATH
 - Python 3.10+ with `Pillow`
 - Transcription: `pip install mlx-whisper` on a Mac with Apple Silicon, `pip install faster-whisper` anywhere else
+- Animation: Node 18+ and Chrome for [HyperFrames](https://www.npmjs.com/package/hyperframes) (`npx hyperframes`). Without them `edit.py` renders static captions.
 
 You can run the scripts by hand too:
 
@@ -60,7 +61,6 @@ The prompts are in English, but Claude writes scripts, captions and descriptions
 
 Things that make the result look more produced, but need extra accounts or setup. Not included here:
 
-- animated captions and cards rendered from HTML, e.g. [HyperFrames](https://www.npmjs.com/package/hyperframes)
 - text behind the speaker, by cutting out the person with [RobustVideoMatting](https://github.com/PeterL1n/RobustVideoMatting)
 - scheduling posts from Claude through a social media tool with an MCP server, e.g. [Publer](https://publer.com)
 - voice-over from a text-to-speech service, music and sound effects from a licensed library
